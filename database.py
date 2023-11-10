@@ -41,13 +41,11 @@ class NEODatabase:
         self._neo_collection = neos
         self._approach_collection = approaches
 
-        # TODO: What additional auxiliary data structures will be useful?
         self._designation_to_index = {}
 
         for idx, neo in enumerate(self._neo_collection):
             assert bool(neo.approaches) is False
             self._designation_to_index[neo.designation] = idx
-        # TODO: Link together the NEOs and their close approaches.
         for approach in self._approach_collection:
             assert approach.neo is None
             if approach._designation in self._designation_to_index:
