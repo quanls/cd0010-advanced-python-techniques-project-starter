@@ -41,19 +41,15 @@ class NEODatabase:
         self._neo_collection = neos
         self._approach_collection = approaches
 
-        self._designation_to_index = {}
+        self._designation_to_neo = {neo.designation: neo for neo in self._neo_collection}
 
-        for idx, neo in enumerate(self._neo_collection):
-            assert bool(neo.approaches) is False
-            self._designation_to_index[neo.designation] = idx
         for approach in self._approach_collection:
             assert approach.neo is None
-            if approach._designation in self._designation_to_index:
-                approach.neo = self._neo_collection[self._designation_to_index[approach._designation]]
-                self._neo_collection[self._designation_to_index[approach._designation]
-                           ].approaches.append(approach)
+            if approach._designation in self._designation_to_neo:
+                neo = self._designation_to_neo[approach._designation]
+                approach.neo = neo
+                neo.approaches.append(approach)
 
-        self._designation_to_neo = {neo.designation: neo for neo in self._neo_collection}
         self._name_to_neo = {neo.name: neo for neo in self._neo_collection}
         
     def get_neo_by_designation(self, designation):
@@ -69,7 +65,6 @@ class NEODatabase:
         :param designation: The primary designation of the NEO to search for.
         :return: The `NearEarthObject` with the desired primary designation, or `None`.
         """
-        # TODO: Fetch an NEO by its primary designation.
         return self._designation_to_neo.get(designation, None)
 
     def get_neo_by_name(self, name):
@@ -86,7 +81,6 @@ class NEODatabase:
         :param name: The name, as a string, of the NEO to search for.
         :return: The `NearEarthObject` with the desired name, or `None`.
         """
-        # TODO: Fetch an NEO by its name.
         return self._name_to_neo.get(name, None)
 
     def query(self, filters=()):
@@ -103,7 +97,6 @@ class NEODatabase:
         :param filters: A collection of filters capturing user-specified criteria.
         :return: A stream of matching `CloseApproach` objects.
         """
-        # TODO: Generate `CloseApproach` objects that match all of the filters.
         for approach in self._approach_collection:
             case = (filter(approach) for filter in filters)
             if all(case):

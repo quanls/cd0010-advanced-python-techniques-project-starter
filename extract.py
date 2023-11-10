@@ -26,16 +26,19 @@ def load_neos(neo_csv_path):
     """
     neo_objects = []
     with open(neo_csv_path, 'r') as csv_file:
-        reader = csv.reader(csv_file)
-        next(reader)  # Skip the header row
-        for line in reader:
+        reader = csv.DictReader(csv_file)
+        for row in reader:
             try:
-                data = [line[3], line[7], line[4], float(line[15])]
+                designation = row['pdes']
+                name = row['name']
+                hazardous = True if row['pha'] == 'Y' else False
+                diameter = float(row['diameter'])
             except ValueError:
-                data = [line[3], line[7], line[4], float('nan')]
-            data[1] = True if data[1] == 'Y' else False
-            neo_objects.append(data)
-    return [NearEarthObject(*data) for data in neo_objects]
+                diameter = float('nan')
+
+            neo_objects.append(NearEarthObject(designation, hazardous, name, diameter))
+
+    return neo_objects
 
 def load_approaches(cad_json_path):
     """Read close approach data from a JSON file.
